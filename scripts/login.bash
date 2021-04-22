@@ -12,7 +12,7 @@ function print_tip {
     printf "  HDD mounted at \e[96;1m/data\e[0m\n"
     printf "  HOME directory mounted at \e[96;1m/home/$USER\e[0m\n"
     printf "  See GPU load: \e[96;1mnvidia-smi\e[0m\n"
-    printf "  More detailed guide: please read the user manuals\n"
+    printf "  More detailed guide: \e[96;1;4mhttps://www.yuque.com/docs/share/31492f84-9dc9-4741-9da4-f71f4cca6f6a?#\e[0m\n"
     echo "========== "
 }
 
@@ -64,7 +64,7 @@ function auto_start {
 
 
 function do_login {
-    ssh root@localhost -p $PORT
+    ssh -X root@localhost -p $PORT
 }
 
 function do_stop {

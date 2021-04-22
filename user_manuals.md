@@ -42,7 +42,7 @@ cd docker-gpu && ./login.bash
 
 第一次登录时，会自动创建Docker Container。后续登录时如果Container没有启动，则会自动开启，并显示当前容器状态。
 
-![create_info](%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/create_container.png)
+![create_info](user_manuals/create_container.png)
 
 #### 3、进入 Docker Container
 
@@ -57,7 +57,7 @@ login
 
 建议进入容器后立即修改自己的密码。
 
-![login_info](%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/login_container.png)
+![login_info](user_manuals/login_container.png)
 
 #### 4、关闭 Docker Container
 
@@ -70,7 +70,7 @@ stop
 
 即可手动关闭自己的容器。
 
-![stop_info](%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/stop_container.png)
+![stop_info](user_manuals/stop_container.png)
 
 #### 5、重启 Docker Container
 
@@ -92,6 +92,37 @@ restart
 
 **使用容器时，容器中的数据需要保留时需要写在这两个目录下面，否则容器删除重建时数据会丢失。**
 
+### 三、如果在容器内使用GUI?
+
+由于dockerfile目前没有预置该功能，需要用户额外进行如下操作：
+
+- 使用 `ssh -X` 来访问容器，目前启动脚本中默认带了 `-X` 参数，不需要额外设置；
+- 在容器内安装 `xauth`：
+  
+  ```shell
+  sudo apt install xauth  # if not installed
+  ```
+
+- 在/etc/ssh/sshd配置文件中加入下面这几行：
+  
+  ```shell
+  vi /etc/ssh/sshd_config
+  X11Forwarding yes  # add
+  X11UseLocalhost no  # add
+
+  /etc/init.d/ssh restart  # 重启SSH使设置生效
+  ```
+
+- 退出容器重新登录，就可以将远程的 GUI 放在本地显示了。
+
+  ```shell
+  apt-get install x11-apps  # if not installed
+  xeyes  # for example
+  xeyes &  # or you can run in backround
+  ```
+
+---
+
 ## 服务器信息
 
 目前只在gpu01上使用docker gpu server方案，待运行稳定、可靠、适用之后再考虑到迁移到gpu02和gpu03。
@@ -110,3 +141,4 @@ username | gpu01 port
 ---------|----------
  zhangyiteng | 22000
  liyouhua | 22004
+ lethe | 22005

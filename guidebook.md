@@ -279,11 +279,14 @@ nvidia-docker image build -t cuda-conda-desktop:1.0 .
 
 1、用户如何保留/制作自己的镜像
 
+  `docker commit` 是比较直接简单的做法，但是不推荐这样做，因为镜像会很大，且对用户来说是黑盒。
+  最好是能够编写自己的dockerfile。
+
 2、如何保证容器稳定运行
 
 ## 其他概念介绍
 
-### 1、nvidia-docker
+### nvidia-docker
 
 nvidia-docker是一个可以使用GPU的docker，nvidia-docker是在docker上做了一层封装，通过nvidia-docker-plugin，然后调用到docker上，其最终实现的还是在docker的启动命令上携带一些必要的参数。因此在安装nvidia-docker之前，还是需要安装docker的。
 
@@ -294,6 +297,11 @@ docker一般都是使用基于CPU的应用，而如果是GPU的话，就需要�
 nvidia-docker-plugin是一个docker plugin，被用来帮助我们轻松部署container到GPU混合的环境下。类似一个守护进程，发现宿主机驱动文件以及GPU 设备，并且将这些挂载到来自docker守护进程的请求中。以此来支持docker GPU的使用。
 
 nvidia-docker 对原始的 Docker 命令作了封装，只要使用 `nvidia-docker run` 命令运行容器，容器就可以访问主机显卡设备（只要主机安装了显卡驱动）。nvidia-docker 的使用规则和 Docker 是一致的，只需要把命令里的“docker”替换为“nvidia-docker”就可以了。
+
+### 容器端口映射
+
+docker默认是不对外开放端口的。默认情况下，容器可以主动访问到外部网络的连接，但是外部网络无法访问到容器。所以如果在容器内运行网络应用和服务是无法提供给外界使用的，端口映射功能可以实现公网上访问容器内部的网络应用。
+详见：[以阿里云服务器为例理解docker端口映射](https://blog.csdn.net/The_Time_Runner/article/details/105031925)
 
 ## 参考
 
