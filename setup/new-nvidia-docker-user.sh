@@ -1,5 +1,5 @@
 #!/bin/bash
-# save as /root/new-nvidia-docker-user.sh
+# save as /root/new_docker/new-nvidia-docker-user.sh
 
 GROUPNAME="lab-gpu"
 
@@ -40,6 +40,11 @@ cp /public/login.bash /home/$USERNAME/docker-gpu
 echo "Fixing filesystem permission..."
 chown -R $USERNAME:$GROUPNAME /home/$USERNAME/docker-gpu
 chmod a+x /home/$USERNAME/docker-gpu/login.bash
+
+# add to user_info
+echo "Adding user info..."
+USERINFOFILE=/root/new_docker/user_info
+sed -i '$a\'$USERNAME'' $USERINFOFILE
 
 # finish
 usermod -s /bin/bash $USERNAME
