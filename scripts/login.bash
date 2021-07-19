@@ -4,14 +4,28 @@
 # chmod a+x /public/login.bash
 
 IP=`/sbin/ifconfig enp2s0 | grep "inet" |awk 'NR==1{print $2}'`
-PORT=$(cat /public/ports/$USER)
 CONTAINER_NAME="$USER-container"
+PORT=$(cat /public/ports/$USER)
+
+# RESERVED_PORT
+RESERVED_PORT_1=$(cat /public/reserved-ports/$USER | awk '{print $1}')
+RESERVED_PORT_2=$(cat /public/reserved-ports/$USER | awk '{print $2}')
+# RESERVED_PORT_FLAG = 0
+# RESERVED_PORTFILE=/public/reserved-ports/$USER
+# if [ -f "$RESERVED_PORTFILE" ]; then
+#     RESERVED_PORT_1=$(cat /public/reserved-ports/$USER | awk '{print $1}')
+#     RESERVED_PORT_2=$(cat /public/reserved-ports/$USER | awk '{print $2}')
+#     RESERVED_PORT_FLAG = 1
+# fi
 
 function print_tip {
     echo "========== Tips:"
     printf "  HDD mounted at \e[96;1m/data\e[0m\n"
     printf "  HOME directory mounted at \e[96;1m/home/$USER\e[0m\n"
     printf "  See GPU load: \e[96;1mnvidia-smi\e[0m\n"
+    if [ ! -z "$RESERVED_PORT_1" ]; then
+        printf "  Your allocated reserved ports: \e[96;1m$RESERVED_PORT_1 $RESERVED_PORT_2\e[0m, please use on demand\n"
+    fi
     printf "  More detailed guide: \e[96;1;4mhttps://www.yuque.com/docs/share/31492f84-9dc9-4741-9da4-f71f4cca6f6a?#\e[0m\n"
     echo "========== "
 }
