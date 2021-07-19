@@ -29,6 +29,15 @@ echo $PORT > /public/ports/$USERNAME
 echo $(( $PORT+1 )) > $PORTFILE
 printf "\e[96;1m$PORT\e[0m\n"
 
+# allocate reserved port
+printf "Allocating reserved ports: "
+RESERVED_PORTFILE=/public/next-reserved-port
+RESERVED_PORT_1=$(cat $RESERVED_PORTFILE)
+RESERVED_PORT_2=$RESERVED_PORT_1+1
+echo $RESERVED_PORT_1 $RESERVED_PORT_2 > /public/reserved-ports/$USERNAME
+echo $(( $RESERVED_PORT_2+1 )) > $RESERVED_PORTFILE
+printf "\e[96;1m$RESERVED_PORT_1 $RESERVED_PORT_2\e[0m\n"
+
 # change password
 echo "Setting password in the host:"
 passwd $USERNAME
