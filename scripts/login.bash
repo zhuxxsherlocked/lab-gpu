@@ -5,6 +5,7 @@
 
 IP=`/sbin/ifconfig enp2s0 | grep "inet" |awk 'NR==1{print $2}'`
 CONTAINER_NAME="$USER-container"
+SNAPSHOT_PATH="/data/Workspaces/container-snapshot"
 PORT=$(cat /public/ports/$USER)
 
 # RESERVED_PORT
@@ -102,6 +103,7 @@ function do_restart {
 
 function do_snapshot {
     echo "========== Take a snapshot of your container..."
+    docker export 
 }
 
 
