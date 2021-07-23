@@ -8,23 +8,23 @@ CONTAINER_NAME="$USER-container"
 PORT=$(cat /public/ports/$USER)
 
 # RESERVED_PORT
-RESERVED_PORT_1=$(cat /public/reserved-ports/$USER | awk '{print $1}')
-RESERVED_PORT_2=$(cat /public/reserved-ports/$USER | awk '{print $2}')
-# RESERVED_PORT_FLAG = 0
-# RESERVED_PORTFILE=/public/reserved-ports/$USER
-# if [ -f "$RESERVED_PORTFILE" ]; then
-#     RESERVED_PORT_1=$(cat /public/reserved-ports/$USER | awk '{print $1}')
-#     RESERVED_PORT_2=$(cat /public/reserved-ports/$USER | awk '{print $2}')
-#     RESERVED_PORT_FLAG = 1
-# fi
+# RESERVED_PORT_1=$(cat /public/reserved-ports/$USER | awk '{print $1}')
+# RESERVED_PORT_2=$(cat /public/reserved-ports/$USER | awk '{print $2}')
+RESERVED_PORT_FLAG=0
+RESERVED_PORTFILE=/public/reserved-ports/$USER
+if [ -f "$RESERVED_PORTFILE" ]; then
+    RESERVED_PORT_1=$(cat /public/reserved-ports/$USER | awk '{print $1}')
+    RESERVED_PORT_2=$(cat /public/reserved-ports/$USER | awk '{print $2}')
+    RESERVED_PORT_FLAG=1
+fi
 
 function print_tip {
     echo "========== Tips:"
-    printf "  HDD mounted at \e[96;1m/data\e[0m\n"
-    printf "  HOME directory mounted at \e[96;1m/home/$USER\e[0m\n"
-    printf "  See GPU load: \e[96;1mnvidia-smi\e[0m\n"
-    if [ ! -z "$RESERVED_PORT_1" ]; then
-        printf "  Your allocated reserved ports: \e[96;1m$RESERVED_PORT_1 $RESERVED_PORT_2\e[0m, please use on demand\n"
+    printf "  HDD mounted at \e[96;1m/data\e[0m\n."
+    printf "  HOME directory mounted at \e[96;1m/home/$USER\e[0m\n."
+    printf "  See GPU load: \e[96;1mnvidia-smi\e[0m\n."
+    if [ "$RESERVED_PORT_FLAG" == 1 ]; then
+        printf "  Your allocated reserved ports: \e[96;1m$RESERVED_PORT_1 $RESERVED_PORT_2\e[0m.  The ports have already been mapped: \e[96;1mhost:$RESERVED_PORT_1 => container:$RESERVED_PORT_1\e[0m, \e[96;1mhost:$RESERVED_PORT_2 => container:$RESERVED_PORT_2\e[0m.\n"
     fi
     printf "  More detailed guide: \e[96;1;4mhttps://www.yuque.com/docs/share/31492f84-9dc9-4741-9da4-f71f4cca6f6a?#\e[0m\n"
     echo "========== "
@@ -54,7 +54,14 @@ function auto_start {
     docker inspect --format '{{.State.Running}}' $CONTAINER_NAME > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         echo "========== Creating your container at first time..."
-        nvidia-docker run -dit -v /home/$USER:/home/$USER -v /data:/data -p$PORT:22 --name=$CONTAINER_NAME -h="$USER-VM" cuda-conda-desktop:1.0
+        # nvidia-docker run -dit -v /home/$USER:/home/$USER -v /data:/data -p$PORT:22 --name=$CONTAINER_NAME -h="$USER-VM" cuda-conda-desktop:1.0
+
+        if [ "$RESERVED_PORT_FLAG" == 1 ]; then
+            nvidia-docker run -dit -v /home/$USER:/home/$USER -v /data:/data -p$PORT:22 -p$RESERVED_PORT_1:$RESERVED_PORT_1 -p$RESERVED_PORT_2:$RESERVED_PORT_2  --name=$CONTAINER_NAME -h="$USER-VM" cuda-conda-desktop:1.0
+        else
+            nvidia-docker run -dit -v /home/$USER:/home/$USER -v /data:/data -p$PORT:22 --name=$CONTAINER_NAME -h="$USER-VM" cuda-conda-desktop:1.0
+        fi
+
         if [ $? -ne 0 ]; then
             echo "========== Fail. Please contact administrators"
             exit 1
@@ -91,6 +98,10 @@ function do_restart {
     echo "========== Restarting your container..."
     docker restart ${CONTAINER_NAME}
     container_info
+}
+
+function do_snapshot {
+    echo "========== Take a snapshot of your container..."
 }
 
 
