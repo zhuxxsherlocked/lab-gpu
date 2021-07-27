@@ -103,7 +103,12 @@ function do_restart {
 
 function do_snapshot {
     echo "========== Take a snapshot of your container..."
-    docker export 
+    SAVETO=$SNAPSHOT_PATH/$USER.tar
+    docker export -o ${SAVETO} ${CONTAINER_NAME}
+    if [ -f "$SAVETO" ]; then
+        printf "Successfully saved to: \e[96;1m$SAVETO\e[0m\n"
+        du -sh $SAVETO
+    fi
 }
 
 
