@@ -88,7 +88,11 @@ restart
 容器启动默认挂载两个宿主机目录。
 
 - 本地磁盘，用户家目录：/home/\$USER :/home/\$USER
-- 数据盘：/data:/data (建议把数据放在这个下边)
+- 数据盘(建议把数据放在这个下边)，各服务器挂载形式如下：
+  服务器 | 目录挂载
+  ---------|----------
+  gpu01 | /data:/data
+  gpu03 | /mnt:/mnt
 
 **使用容器时，容器中的数据需要保留时需要写在这两个目录下面，否则容器删除重建时数据会丢失。**
 
@@ -137,8 +141,14 @@ Name | IP | CPU | GPU | Memory | Hardware
 
 ### 用户列表
 
+gpu01用户列表：
+
 username | gpu01 port
 ---------|----------
  zhangyiteng | 22000
  liyouhua | 22004
  lethe | 22005
+ xuewen | 22006
+ colocasia |22009
+ lxy | 22010
+ BingQian | 22011
