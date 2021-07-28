@@ -152,3 +152,9 @@ username | gpu01 port
  colocasia |22009
  lxy | 22010
  BingQian | 22011
+
+gpu03用户列表：
+
+username | gpu03 port | gpu03 reserverd ports
+---------|----------|----------
+ liyouhua | 22000 | 18000 18001

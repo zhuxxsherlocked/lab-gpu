@@ -5,7 +5,10 @@
 
 IP=`/sbin/ifconfig enp2s0 | grep "inet" |awk 'NR==1{print $2}'`
 CONTAINER_NAME="$USER-container"
-SNAPSHOT_PATH="/data/Workspaces/container-snapshot"
+# notice: HDD PATH
+# GPU01: /data GPU03: /mnt
+HDD_PATH="/data"
+SNAPSHOT_PATH="$HDD_PATH/Workspaces/container-snapshot"
 PORT=$(cat /public/ports/$USER)
 
 # RESERVED_PORT
@@ -58,7 +61,7 @@ function auto_start {
         # nvidia-docker run -dit -v /home/$USER:/home/$USER -v /data:/data -p$PORT:22 --name=$CONTAINER_NAME -h="$USER-VM" cuda-conda-desktop:1.0
 
         if [ "$RESERVED_PORT_FLAG" == 1 ]; then
-            nvidia-docker run -dit -v /home/$USER:/home/$USER -v /data:/data -p$PORT:22 -p$RESERVED_PORT_1:$RESERVED_PORT_1 -p$RESERVED_PORT_2:$RESERVED_PORT_2  --name=$CONTAINER_NAME -h="$USER-VM" cuda-conda-desktop:1.0
+            nvidia-docker run -dit -v /home/$USER:/home/$USER -v $HDD_PATH:/data -p$PORT:22 -p$RESERVED_PORT_1:$RESERVED_PORT_1 -p$RESERVED_PORT_2:$RESERVED_PORT_2  --name=$CONTAINER_NAME -h="$USER-VM" cuda-conda-desktop:1.0
         else
             nvidia-docker run -dit -v /home/$USER:/home/$USER -v /data:/data -p$PORT:22 --name=$CONTAINER_NAME -h="$USER-VM" cuda-conda-desktop:1.0
         fi
@@ -101,15 +104,15 @@ function do_restart {
     container_info
 }
 
-# function do_snapshot {
-#     echo "========== Take a snapshot of your container..."
-#     SAVETO=$SNAPSHOT_PATH/$USER.tar
-#     docker export -o ${SAVETO} ${CONTAINER_NAME}
-#     if [ -f "$SAVETO" ]; then
-#         printf "Successfully saved to: \e[96;1m$SAVETO\e[0m\n"
-#         du -sh $SAVETO
-#     fi
-# }
+function do_snapshot {
+    echo "========== Take a snapshot of your container..."
+    SAVETO=$SNAPSHOT_PATH/$USER.tar
+    docker export -o ${SAVETO} ${CONTAINER_NAME}
+    if [ -f "$SAVETO" ]; then
+        printf "Successfully saved to: \e[96;1m$SAVETO\e[0m\n"
+        du -sh $SAVETO
+    fi
+}
 
 
 printf "========== Hi, \e[96;1m$USER\e[0m\n"
