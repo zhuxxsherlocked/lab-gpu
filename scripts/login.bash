@@ -4,31 +4,28 @@
 # chmod a+x /public/login.bash
 
 IP=`/sbin/ifconfig enp2s0 | grep "inet" |awk 'NR==1{print $2}'`
-CONTAINER_NAME="$USER-container"
 # notice: HDD PATH
 # GPU01: /data GPU03: /mnt
-HDD_PATH="/data"
+if [ $IP == "10.10.49.174" ]; then
+    HDD_PATH="/data"
+else
+    HDD_PATH="/mnt"
+fi
+
+CONTAINER_NAME="$USER-container"
 SNAPSHOT_PATH="$HDD_PATH/Workspaces/container-snapshot"
 PORT=$(cat /public/ports/$USER)
+RESERVED_PORT_1=$(cat /public/reserved-ports/$USER | awk '{print $1}')
+RESERVED_PORT_2=$(cat /public/reserved-ports/$USER | awk '{print $2}')
 
-USER_RESERVED_PORTFILE="/public/reserved-ports/$USER"
-if [ -f "$USER_RESERVED_PORTFILE" ]; then
-    RESERVED_PORTFILE=/public/next-reserved-port
-    RESERVED_PORT_1=$(cat $RESERVED_PORTFILE)
-    RESERVED_PORT_2=$(( $RESERVED_PORT_1+1 ))
-    echo $RESERVED_PORT_1 $RESERVED_PORT_2 > $USER_RESERVED_PORTFILE
-    echo $(( $RESERVED_PORT_2+1 )) > $RESERVED_PORTFILE
-then
-    RESERVED_PORT_1=$(cat $USER_RESERVED_PORTFILE | awk '{print $1}')
-    RESERVED_PORT_2=$(cat $USER_RESERVED_PORTFILE | awk '{print $2}')
-fi
 
 function print_tip {
     echo "========== Tips:"
-    printf "  HDD mounted at \e[96;1m/data\e[0m\n."
+    printf "  HDD mounted at \e[96;1m$HDD_PATH\e[0m\n."
     printf "  HOME directory mounted at \e[96;1m/home/$USER\e[0m\n."
     printf "  See GPU load: \e[96;1mnvidia-smi\e[0m\n."
-    if [ "$RESERVED_PORT_FLAG" == 1 ]; then
+    docker port $CONTAINER_NAME | grep 180* > /dev/null 2>&1
+    if [ $? eq 0 ]; then
         printf "  Your allocated reserved ports: \e[96;1m$RESERVED_PORT_1 $RESERVED_PORT_2\e[0m.  The ports have already been mapped: \e[96;1mhost:$RESERVED_PORT_1 => container:$RESERVED_PORT_1\e[0m, \e[96;1mhost:$RESERVED_PORT_2 => container:$RESERVED_PORT_2\e[0m.\n"
     fi
     printf "  More detailed guide: \e[96;1;4mhttps://www.yuque.com/docs/share/31492f84-9dc9-4741-9da4-f71f4cca6f6a?#\e[0m\n"
@@ -36,10 +33,11 @@ function print_tip {
 }
 
 function print_command_help {
-    echo 
-    printf "  * Login your container, please input: \e[96;1mlogin\e[0m\n"
-    printf "  * Manually stop your container, please input: \e[96;1mstop\e[0m\n"
-    printf "  * Manually restart your container, please input: \e[96;1mrestart\e[0m\n"
+    echo "========== Container Operate Menu:"
+    printf "  * Login your container:   please input \e[96;1mlogin\e[0m\n"
+    printf "  * Stop your container:    please input \e[96;1mstop\e[0m\n"
+    printf "  * Restart your container: please input \e[96;1mrestart\e[0m\n"
+    printf "  * Take a snapshot:        please input \e[96;1msnapshot\e[0m\n"
     echo 
 }
 
@@ -55,17 +53,12 @@ function container_info {
     echo "IP:      $IPAddress"
 }
 
-function auto_start {
+function auto_register {
     docker inspect --format '{{.State.Running}}' $CONTAINER_NAME > /dev/null 2>&1
     if [ $? -ne 0 ]; then
-        echo "========== Creating your container at first time..."
+        echo "========== This is the first time you login to a server, creating your container now..."
         # nvidia-docker run -dit -v /home/$USER:/home/$USER -v /data:/data -p$PORT:22 --name=$CONTAINER_NAME -h="$USER-VM" cuda-conda-desktop:1.0
-
-        if [ "$RESERVED_PORT_FLAG" == 1 ]; then
-            nvidia-docker run -dit -v /home/$USER:/home/$USER -v $HDD_PATH:/data -p$PORT:22 -p$RESERVED_PORT_1:$RESERVED_PORT_1 -p$RESERVED_PORT_2:$RESERVED_PORT_2  --name=$CONTAINER_NAME -h="$USER-VM" cuda-conda-desktop:1.0
-        else
-            nvidia-docker run -dit -v /home/$USER:/home/$USER -v /data:/data -p$PORT:22 --name=$CONTAINER_NAME -h="$USER-VM" cuda-conda-desktop:1.0
-        fi
+        nvidia-docker run -dit -v /home/$USER:/home/$USER -v $HDD_PATH:/data -p$PORT:22 -p$RESERVED_PORT_1:$RESERVED_PORT_1 -p$RESERVED_PORT_2:$RESERVED_PORT_2  --name=$CONTAINER_NAME -h="$USER-VM" cuda-conda-desktop:1.0
 
         if [ $? -ne 0 ]; then
             echo "========== Fail. Please contact administrators"
@@ -73,8 +66,9 @@ function auto_start {
         fi
         sleep 2  # wait 2 seconds for container running
     fi
-    
-    container_info
+}
+
+function do_login {
     IF_RUNNING=`docker inspect --format '{{.State.Running}}' ${CONTAINER_NAME}`
     if [ "${IF_RUNNING}" != "true" ]; then
         echo "========== It seems that your container is not running"
@@ -86,10 +80,10 @@ function auto_start {
         fi
     fi
     echo "========== Your container is running"
-}
 
+    container_info
 
-function do_login {
+    echo "========== Logining your container..."
     ssh -X root@localhost -p $PORT
 }
 
@@ -115,6 +109,10 @@ function do_snapshot {
     fi
 }
 
+# function recover {
+
+# }
+
 
 printf "========== Hi, \e[96;1m$USER\e[0m\n"
 echo "========== Welcome to Our Lab GPU Server (IP: $IP)"
@@ -125,7 +123,7 @@ if [[ -z "$PORT" ]]; then
     exit 1
 fi
 
-auto_start
+auto_register
 print_tip
 print_command_help
 echo "Please input your command:"
@@ -133,8 +131,10 @@ read COMMAND
 if   [ "$COMMAND" == "login" ];   then do_login
 elif   [ "$COMMAND" == "stop" ];    then do_stop
 elif   [ "$COMMAND" == "restart" ];    then do_restart
+elif   [ "$COMMAND" == "snapshot" ];    then do_snapshot
 else
     echo "========== Unknown command"
     print_command_help
     exit 1
 fi
+echo "========== Have a good day :-)"
