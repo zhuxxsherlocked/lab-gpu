@@ -11,16 +11,17 @@ HDD_PATH="/data"
 SNAPSHOT_PATH="$HDD_PATH/Workspaces/container-snapshot"
 PORT=$(cat /public/ports/$USER)
 
-# RESERVED_PORT
-# RESERVED_PORT_1=$(cat /public/reserved-ports/$USER | awk '{print $1}')
-# RESERVED_PORT_2=$(cat /public/reserved-ports/$USER | awk '{print $2}')
-RESERVED_PORT_FLAG=0
-RESERVED_PORTFILE=/public/reserved-ports/$USER
-if [ -f "$RESERVED_PORTFILE" ]; then
-    RESERVED_PORT_1=$(cat /public/reserved-ports/$USER | awk '{print $1}')
-    RESERVED_PORT_2=$(cat /public/reserved-ports/$USER | awk '{print $2}')
-    RESERVED_PORT_FLAG=1
+USER_RESERVED_PORTFILE=/public/reserved-ports/$USER
+if [ -f "$USER_RESERVED_PORTFILE" ]; then
+    RESERVED_PORTFILE=/public/next-reserved-port
+    RESERVED_PORT_1=$(cat $RESERVED_PORTFILE)
+    RESERVED_PORT_2=$(( $RESERVED_PORT_1+1 ))
+    echo $RESERVED_PORT_1 $RESERVED_PORT_2 > /public/reserved-ports/$USERNAME
+    echo $(( $RESERVED_PORT_2+1 )) > $RESERVED_PORTFILE
 fi
+
+RESERVED_PORT_1=$(cat $RESERVED_PORTFILE | awk '{print $1}')
+RESERVED_PORT_2=$(cat $RESERVED_PORTFILE | awk '{print $2}')
 
 function print_tip {
     echo "========== Tips:"
