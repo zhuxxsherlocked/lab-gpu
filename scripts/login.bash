@@ -104,14 +104,30 @@ function do_snapshot {
     SAVETO=$SNAPSHOT_PATH/$USER.tar
     docker export -o ${SAVETO} ${CONTAINER_NAME}
     if [ -f "$SAVETO" ]; then
-        printf "Successfully saved to: \e[96;1m$SAVETO\e[0m\n"
+        printf "========== Successfully saved to: \e[96;1m$SAVETO\e[0m\n"
+        printf "========== Please save to your computer in time if necessary"
+        printf "========== The copy on the server will be processed irregularly"
         du -sh $SAVETO
     fi
 }
 
-# function recover {
+function recover {
+    echo "========== Recover from a snapshot..."
+    RECOVERFROM=$SNAPSHOT_PATH/$USER.tar
+    if [ ! -f "$RECOVERFROM" ]; then
+        echo "========== Snapshot does not exists."
+        echo "========== Please take a snapshot first."
+        return
+    fi
 
-# }
+    echo "========== WARNING: If you want to recover from your snapshot, fisrtly will delete your previous container"
+    echo "Please input \e[96;1myes\e[0m\n to confirm"
+    read RECOVER_OPTION
+    if   [ "$RECOVER_OPTION" != "yes" ]; then
+        echo "Recover cancelled"
+        return
+    fi
+}
 
 
 printf "========== Hi, \e[96;1m$USER\e[0m\n"
