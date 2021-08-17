@@ -111,23 +111,25 @@ function do_snapshot {
     fi
 }
 
-function recover {
-    echo "========== Recover from a snapshot..."
-    RECOVERFROM=$SNAPSHOT_PATH/$USER.tar
-    if [ ! -f "$RECOVERFROM" ]; then
-        echo "========== Snapshot does not exists."
-        echo "========== Please take a snapshot first."
-        return
-    fi
+# function recover {
+#     echo "========== Recover from a snapshot..."
+#     RECOVERFROM=$SNAPSHOT_PATH/$USER.tar
+#     if [ ! -f "$RECOVERFROM" ]; then
+#         echo "========== Snapshot does not exists."
+#         echo "========== Please take a snapshot first."
+#         return
+#     fi
 
-    echo "========== WARNING: If you want to recover from your snapshot, fisrtly will delete your previous container"
-    echo "Please input \e[96;1myes\e[0m\n to confirm"
-    read RECOVER_OPTION
-    if   [ "$RECOVER_OPTION" != "yes" ]; then
-        echo "Recover cancelled"
-        return
-    fi
-}
+#     echo "========== WARNING: If you want to recover from your snapshot, fisrtly will delete your previous container"
+#     echo "Please input \e[96;1myes\e[0m\n to confirm"
+#     read RECOVER_OPTION
+#     if   [ "$RECOVER_OPTION" != "yes" ]; then
+#         echo "Recover cancelled"
+#         return
+#     fi
+
+#     docker rm -f $CONTAINER_NAME
+# }
 
 
 printf "========== Hi, \e[96;1m$USER\e[0m\n"
