@@ -33,7 +33,7 @@ function print_tip {
 }
 
 function print_command_help {
-    echo "========== Container Operate Menu:"
+    echo "========== Container Operation Menu:"
     printf "  * Login your container, please input \e[96;1mlogin\e[0m\n"
     printf "  * Stop your container, please input \e[96;1mstop\e[0m\n"
     printf "  * Restart your container, please input \e[96;1mrestart\e[0m\n"
@@ -105,7 +105,7 @@ function do_snapshot {
     docker export -o ${SAVETO} ${CONTAINER_NAME}
     if [ -f "$SAVETO" ]; then
         printf "========== Successfully saved to: \e[96;1m$SAVETO\e[0m\n"
-        printf "========== Please save to your computer in time if necessary"
+        printf "========== Please save to your computer in time if necessary\n"
         printf "========== The copy on the server will be processed irregularly"
         du -sh $SAVETO
     fi
