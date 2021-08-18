@@ -106,7 +106,7 @@ function do_snapshot {
     if [ -f "$SAVETO" ]; then
         printf "========== Successfully saved to: \e[96;1m$SAVETO\e[0m\n"
         printf "========== Please save to your computer in time if necessary\n"
-        printf "========== The copy on the server will be processed irregularly"
+        printf "========== The copy on the server will be processed irregularly\n"
         du -sh $SAVETO
     fi
 }

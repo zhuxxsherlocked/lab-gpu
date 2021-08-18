@@ -8,8 +8,6 @@
 1. 新用户创建容器时，新增两个预留端口
 2. 增加用户容器打包功能
 
-具体使用方法参加下文。
-
 ---
 
 ## 方案简介
@@ -51,7 +49,7 @@ cd docker-gpu && ./login.bash
 
 #### 2、启动 Docker Container
 
-第一次登录时，会自动创建Docker Container。后续登录时如果Container没有启动，则会自动开启，并显示当前容器状态。
+第一次登录时，会自动创建Docker Container。
 
 ![create_info](user_manuals/create_container.png)
 
@@ -63,6 +61,8 @@ cd docker-gpu && ./login.bash
 Please input your command:
 login
 ```
+
+若此时Container没有启动，则会自动开启，并显示当前容器状态。
 
 输入容器root账号的密码（默认123456），即可进入容器，大家就可以自由发挥，配置自己需要的环境和软件。
 
@@ -94,6 +94,29 @@ restart
 
 即可手动关闭自己的容器。
 
+#### 6、保存容器快照
+
+如果想保存自己的容器副本，根据提示输入：_snapshot_
+
+```shell
+Please input your command:
+snapshot
+```
+
+容器快照保存在外挂磁盘中，如GPU01的路径，`/data/Workspaces/container-snapshot`。
+
+快照以用户名命名。具体信息可参见屏幕输出。
+
+![snapshot_info](user_manuals/snapshot.png)
+
+**保存容器快照后请记得及时把tar拷贝到自己的本机，由于服务器上空间有限，会不定期将文件删除。**
+
+**请注意，按这种方式保存的快照文件会被覆盖。**
+
+#### 7、从快照恢复镜像
+
+此操作有一定风险性，因此没有集成到脚本中。
+
 ### 二、目录挂载说明
 
 容器启动默认挂载两个宿主机目录。
@@ -107,7 +130,11 @@ restart
 
 **使用容器时，容器中的数据需要保留时需要写在这两个目录下面，否则容器删除重建时数据会丢失。**
 
-### 三、如果在容器内使用GUI?
+### 三、容器端口说明
+
+为满足同学使用要求，分配容器时新增两个预留端口。端口信息显示在提示页。
+
+### 四、如果在容器内使用GUI?
 
 由于dockerfile目前没有预置该功能，需要用户额外进行如下操作：
 
@@ -154,7 +181,7 @@ Name | IP | CPU | GPU | Memory | Hardware
 
 gpu01用户列表：
 
-username | gpu01 port
+username | gpu01 port 
 ---------|----------
  zhangyiteng | 22000
  liyouhua | 22004
@@ -163,6 +190,8 @@ username | gpu01 port
  colocasia |22009
  lxy | 22010
  BingQian | 22011
+ wangkexin | 22012
+ wxq928 | 22013
 
 gpu03用户列表：
 
