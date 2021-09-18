@@ -28,7 +28,7 @@ function print_tip {
     if [ $? -eq 0 ]; then
         printf "  Your allocated reserved ports: \e[96;1m$RESERVED_PORT_1 $RESERVED_PORT_2\e[0m.  The ports have already been mapped: \e[96;1mhost:$RESERVED_PORT_1 => container:$RESERVED_PORT_1\e[0m, \e[96;1mhost:$RESERVED_PORT_2 => container:$RESERVED_PORT_2\e[0m.\n"
     fi
-    printf "  More detailed guide: \e[96;1;4mhttps://www.yuque.com/docs/share/31492f84-9dc9-4741-9da4-f71f4cca6f6a?#\e[0m\n"
+    printf "  More detailed guide: \e[96;1;4mhttps://www.wolai.com/4AnKp4Q6PMtXZxizLSy9M1?theme=light\e[0m\n"
     echo "========== "
 }
 

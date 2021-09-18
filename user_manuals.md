@@ -1,7 +1,7 @@
 
 # GPU Server 使用指南
 
-## 版本更新
+## 版本更新列表
 
 ### 更新时间：2021.08.17
 
@@ -20,7 +20,7 @@
 
 ## 概览
 
-- 新用户需要向管理员申请用户权限，之后会分配到一个容器的SSH Port。
+- 新用户需要向管理员申请用户权限，之后会分配到一个容器的SSH Port和两个预留端口。
 - 每个人对自己的Docker Container有完全的控制权限。
 - 物理机的资源（磁盘、内存、显卡）是所有Docker Container共用的。
 - 基础镜像为nvidia/cuda:10.1-cudnn7-runtime-ubuntu18.04，即容器预装好了Ubuntu 18.04.5 LTS，显卡驱动450.102.04以及CUDA 10.1。
@@ -36,7 +36,7 @@
 使用分配的账号登录服务器：
 
 ```shell
-ssh user@gpu-server-ip -p gpu-server-port
+ssh <user>@<gpu-server-ip> -p <gpu-server-port>
 ```
 
 进入用户家目录下 _docker-gpu_ 目录，即/home/\$USER/docker-gpu，执行 _./login.bash_：
@@ -96,7 +96,7 @@ restart
 
 #### 6、保存容器快照
 
-如果想保存自己的容器副本，根据提示输入：_snapshot_
+如果想保存配置好的环境，可以对容器进行备份，根据提示输入：_snapshot_
 
 ```shell
 Please input your command:
@@ -112,10 +112,6 @@ snapshot
 **保存容器快照后请记得及时把tar拷贝到自己的本机，由于服务器上空间有限，会不定期将文件删除。**
 
 **请注意，按这种方式保存的快照文件会被覆盖。**
-
-#### 7、从快照恢复镜像
-
-此操作有一定风险性，因此没有集成到脚本中。
 
 ### 二、目录挂载说明
 
@@ -181,7 +177,7 @@ Name | IP | CPU | GPU | Memory | Hardware
 
 gpu01用户列表：
 
-username | gpu01 port 
+username | gpu01 port
 ---------|----------
  zhangyiteng | 22000
  liyouhua | 22004
@@ -192,6 +188,8 @@ username | gpu01 port
  BingQian | 22011
  wangkexin | 22012
  wxq928 | 22013
+ fanxiaoxuan | 22014
+ sjy | 22015
 
 gpu03用户列表：
 
